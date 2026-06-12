@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"C:/Users/AntonZadoiannyi/.claude/projects/C--repo-tdoc-v3/\" | grep -i 77fd32e1; echo \"---all jsonl---\"; ls \"C:/Users/AntonZadoiannyi/.claude/projects/C--repo-tdoc-v3/\"*.jsonl 2>/dev/null | head -20)",
+      "Bash(python -c ' *)",
+      "Bash(node --check app.js)",
+      "Bash(node --check config.js)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git -c user.name=pokidyok-wq -c user.email=pokidyok-wq@users.noreply.github.com commit -q -m 'Sea Battle: online 2-player Battleship \\(canvas + Supabase Realtime\\) *)",
+      "Bash(git branch *)"
+    ]
+  }
+}

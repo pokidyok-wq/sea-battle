@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sea Battle — Online 2-Player Battleship</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>🚢 Sea Battle</h1>
+      <p id="status-line" class="status-line">Loading…</p>
+    </header>
+
+    <!-- LOBBY -->
+    <section id="lobby" class="panel">
+      <div class="lobby-actions">
+        <button id="btn-new" class="primary">New Game</button>
+        <div class="join-row">
+          <input
+            id="join-code"
+            maxlength="4"
+            placeholder="CODE"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button id="btn-join">Join</button>
+        </div>
+      </div>
+      <p class="hint">
+        One player clicks <b>New Game</b> and shares the 4-letter code. The other
+        types it in and clicks <b>Join</b>.
+      </p>
+    </section>
+
+    <!-- ROOM CODE BANNER -->
+    <section id="room-banner" class="panel hidden">
+      Room code:
+      <span id="room-code" class="room-code">----</span>
+      <button id="btn-copy" class="ghost">Copy</button>
+    </section>
+
+    <!-- PLACEMENT -->
+    <section id="placement" class="panel hidden">
+      <h2>Place your fleet</h2>
+      <div class="board-wrap">
+        <canvas id="place-canvas" width="330" height="330"></canvas>
+      </div>
+      <div class="placement-actions">
+        <button id="btn-randomize">🎲 Randomize</button>
+        <button id="btn-ready" class="primary">Ready</button>
+      </div>
+      <p class="hint">
+        Click a cell to drop the current ship; press <b>R</b> or the rotate
+        button to turn it. Or just hit <b>Randomize</b>.
+        <button id="btn-rotate" class="ghost">Rotate (R)</button>
+      </p>
+    </section>
+
+    <!-- BATTLE -->
+    <section id="battle" class="panel hidden">
+      <div class="boards">
+        <div class="board-col">
+          <h3>Enemy waters</h3>
+          <div class="board-wrap">
+            <canvas id="enemy-canvas" width="330" height="330"></canvas>
+          </div>
+        </div>
+        <div class="board-col">
+          <h3>Your fleet</h3>
+          <div class="board-wrap">
+            <canvas id="own-canvas" width="330" height="330"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME OVER -->
+    <section id="gameover" class="panel hidden">
+      <h2 id="gameover-text">—</h2>
+      <button id="btn-again" class="primary">Back to lobby</button>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

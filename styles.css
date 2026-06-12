@@ -1,0 +1,181 @@
+:root {
+  --bg: #0b1f33;
+  --panel: #12314f;
+  --ink: #eaf2fb;
+  --muted: #9fb6cf;
+  --accent: #3aa0ff;
+  --accent-ink: #04233f;
+  --line: #20496f;
+  --hit: #ff5a5a;
+  --miss: #cfe0f2;
+  --ship: #4a6f9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: radial-gradient(1200px 600px at 50% -10%, #16456f, var(--bg));
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 60px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 2rem;
+  letter-spacing: 0.5px;
+}
+
+.status-line {
+  margin: 0;
+  color: var(--muted);
+  min-height: 1.2em;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  width: 100%;
+  max-width: 760px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.lobby-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.join-row {
+  display: flex;
+  gap: 8px;
+}
+
+input {
+  background: #0c2540;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 1rem;
+  width: 110px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-align: center;
+}
+
+button {
+  background: #1c4267;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 10px 16px;
+  border-radius: 9px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.05s ease, background 0.15s ease;
+}
+
+button:hover {
+  background: #245184;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+button.primary:hover {
+  background: #5cb1ff;
+}
+
+button.ghost {
+  background: transparent;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 12px 0 0;
+}
+
+.room-code {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 8px;
+  color: var(--accent);
+  margin: 0 8px;
+}
+
+.board-wrap {
+  display: inline-block;
+  background: #0c2540;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 6px;
+}
+
+canvas {
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.placement-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.boards {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.board-col {
+  text-align: center;
+}
+
+.board-col h3 {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+#gameover {
+  text-align: center;
+}
