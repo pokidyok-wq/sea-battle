@@ -25,6 +25,15 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 24px 16px 60px;
+  transition: background 0.4s ease;
+}
+
+/* Turn cue: green background on your turn, grey on the opponent's. */
+body.turn-mine {
+  background: radial-gradient(1200px 600px at 50% -10%, #1a6e44, #06281a);
+}
+body.turn-theirs {
+  background: radial-gradient(1200px 600px at 50% -10%, #3c4655, #15191f);
 }
 
 header {

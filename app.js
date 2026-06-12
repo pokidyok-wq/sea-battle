@@ -12,7 +12,9 @@
   // Classic fleet: 1×4, 2×3, 3×2, 4×1 — 10 ships, 20 squares total.
   const FLEET = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1];
   const TOTAL_SHIP_CELLS = FLEET.reduce((a, b) => a + b, 0);
-  const CELL = 33; // px, matches 330px canvas (10 cells + nothing extra)
+  const CELL = 33; // px per cell
+  const MARGIN = 22; // gutter for A–J / 1–10 labels; canvas = MARGIN + SIZE*CELL
+  const LETTERS = "ABCDEFGHIJ";
 
   // ---- Supabase client ----
   const cfg = window.SUPABASE_CONFIG;
@@ -150,33 +152,46 @@
   // ===================================================================
   //  Canvas drawing
   // ===================================================================
+  const ox = (c) => MARGIN + c * CELL;
+  const oy = (r) => MARGIN + r * CELL;
+
   function drawGrid(ctx) {
-    ctx.clearRect(0, 0, SIZE * CELL, SIZE * CELL);
+    const span = SIZE * CELL;
+    ctx.clearRect(0, 0, MARGIN + span, MARGIN + span);
     ctx.fillStyle = "#0c2540";
-    ctx.fillRect(0, 0, SIZE * CELL, SIZE * CELL);
+    ctx.fillRect(MARGIN, MARGIN, span, span);
     ctx.strokeStyle = "#20496f";
     ctx.lineWidth = 1;
     for (let i = 0; i <= SIZE; i++) {
       ctx.beginPath();
-      ctx.moveTo(i * CELL + 0.5, 0);
-      ctx.lineTo(i * CELL + 0.5, SIZE * CELL);
+      ctx.moveTo(MARGIN + i * CELL + 0.5, MARGIN);
+      ctx.lineTo(MARGIN + i * CELL + 0.5, MARGIN + span);
       ctx.stroke();
       ctx.beginPath();
-      ctx.moveTo(0, i * CELL + 0.5);
-      ctx.lineTo(SIZE * CELL, i * CELL + 0.5);
+      ctx.moveTo(MARGIN, MARGIN + i * CELL + 0.5);
+      ctx.lineTo(MARGIN + span, MARGIN + i * CELL + 0.5);
       ctx.stroke();
     }
+    // labels: A–J across the top, 1–10 down the left
+    ctx.fillStyle = "#9fb6cf";
+    ctx.font = "12px system-ui, -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    for (let c = 0; c < SIZE; c++)
+      ctx.fillText(LETTERS[c], ox(c) + CELL / 2, MARGIN / 2);
+    for (let r = 0; r < SIZE; r++)
+      ctx.fillText(String(r + 1), MARGIN / 2, oy(r) + CELL / 2);
   }
 
   function fillCell(ctx, r, c, color) {
     ctx.fillStyle = color;
-    ctx.fillRect(c * CELL + 2, r * CELL + 2, CELL - 3, CELL - 3);
+    ctx.fillRect(ox(c) + 2, oy(r) + 2, CELL - 3, CELL - 3);
   }
 
   function drawDot(ctx, r, c, color) {
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.arc(c * CELL + CELL / 2, r * CELL + CELL / 2, 4, 0, Math.PI * 2);
+    ctx.arc(ox(c) + CELL / 2, oy(r) + CELL / 2, 4, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -185,12 +200,36 @@
     ctx.lineWidth = 3;
     const pad = 8;
     ctx.beginPath();
-    ctx.moveTo(c * CELL + pad, r * CELL + pad);
-    ctx.lineTo((c + 1) * CELL - pad, (r + 1) * CELL - pad);
-    ctx.moveTo((c + 1) * CELL - pad, r * CELL + pad);
-    ctx.lineTo(c * CELL + pad, (r + 1) * CELL - pad);
+    ctx.moveTo(ox(c) + pad, oy(r) + pad);
+    ctx.lineTo(ox(c) + CELL - pad, oy(r) + CELL - pad);
+    ctx.moveTo(ox(c) + CELL - pad, oy(r) + pad);
+    ctx.lineTo(ox(c) + pad, oy(r) + CELL - pad);
     ctx.stroke();
     ctx.lineWidth = 1;
+  }
+
+  // A ship is sunk when every one of its cells has been hit (shots === 2).
+  function isSunk(ship, shots) {
+    return ship.cells.every(([r, c]) => shots[r][c] === 2);
+  }
+
+  // Ring the sunk ship with dots on every surrounding water cell.
+  function drawSunkOutline(ctx, ship) {
+    const occ = new Set(ship.cells.map(([r, c]) => r + "," + c));
+    const perim = new Set();
+    for (const [r, c] of ship.cells)
+      for (let dr = -1; dr <= 1; dr++)
+        for (let dc = -1; dc <= 1; dc++) {
+          const nr = r + dr;
+          const nc = c + dc;
+          if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) continue;
+          const k = nr + "," + nc;
+          if (!occ.has(k)) perim.add(k);
+        }
+    for (const k of perim) {
+      const [r, c] = k.split(",").map(Number);
+      drawDot(ctx, r, c, "#7fa6cc");
+    }
   }
 
   function drawPlacement() {
@@ -224,6 +263,12 @@
         if (shots[r][c] === 1) drawDot(ctx, r, c, "#cfe0f2");
         else if (shots[r][c] === 2) drawX(ctx, r, c, "#ff5a5a");
       }
+    // outline any enemy ship we've fully sunk
+    const other = role === "host" ? "guest" : "host";
+    const enemy = game.boards && game.boards[other];
+    if (enemy && enemy.ships)
+      for (const ship of enemy.ships)
+        if (isSunk(ship, shots)) drawSunkOutline(ctx, ship);
   }
 
   // own board with enemy shots on it
@@ -243,6 +288,10 @@
         if (incoming[r][c] === 1) drawDot(ctx, r, c, "#cfe0f2");
         else if (incoming[r][c] === 2) drawX(ctx, r, c, "#ff5a5a");
       }
+    // outline any of our ships the opponent has sunk
+    if (mine && mine.ships)
+      for (const ship of mine.ships)
+        if (isSunk(ship, incoming)) drawSunkOutline(ctx, ship);
   }
 
   // ===================================================================
@@ -351,6 +400,7 @@
   // ===================================================================
   function enterPlacement() {
     show("placement");
+    clearTurnBg();
     showRoomBanner();
     resetPlacement();
   }
@@ -395,11 +445,18 @@
     drawEnemy();
     drawOwn();
     const myTurn = game.turn === role;
+    document.body.classList.toggle("turn-mine", myTurn);
+    document.body.classList.toggle("turn-theirs", !myTurn);
     setStatus(myTurn ? "Your turn — fire at enemy waters!" : "Opponent's turn…");
+  }
+
+  function clearTurnBg() {
+    document.body.classList.remove("turn-mine", "turn-theirs");
   }
 
   function enterGameOver() {
     show("gameover");
+    clearTurnBg();
     sections.roomBanner.classList.add("hidden");
     const iWon = game.winner === role;
     $("gameover-text").textContent = iWon
@@ -461,10 +518,11 @@
   // ===================================================================
   function cellFromEvent(canvas, e) {
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const c = Math.floor((x / rect.width) * SIZE);
-    const r = Math.floor((y / rect.height) * SIZE);
+    const x = (e.clientX - rect.left) * (canvas.width / rect.width) - MARGIN;
+    const y = (e.clientY - rect.top) * (canvas.height / rect.height) - MARGIN;
+    if (x < 0 || y < 0) return null;
+    const c = Math.floor(x / CELL);
+    const r = Math.floor(y / CELL);
     if (r < 0 || r >= SIZE || c < 0 || c >= SIZE) return null;
     return [r, c];
   }
