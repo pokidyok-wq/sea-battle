@@ -9,7 +9,8 @@
   "use strict";
 
   const SIZE = 10;
-  const FLEET = [5, 4, 3, 3, 2]; // carrier, battleship, cruiser, sub, destroyer
+  // Classic fleet: 1×4, 2×3, 3×2, 4×1 — 10 ships, 20 squares total.
+  const FLEET = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1];
   const TOTAL_SHIP_CELLS = FLEET.reduce((a, b) => a + b, 0);
   const CELL = 33; // px, matches 330px canvas (10 cells + nothing extra)
 

@@ -12,7 +12,7 @@ no accounts — one player shares a 4-letter room code, the other joins.
 4. Both place their fleet (click to drop, **R** to rotate, or **Randomize**) and hit **Ready**.
 5. Take turns firing at enemy waters. A hit lets you fire again; a miss passes the turn. Sink the whole fleet to win.
 
-Fleet: 10×10 board, ships of length 5, 4, 3, 3, 2.
+Fleet: 10×10 board — 1×4-square, 2×3-square, 3×2-square, 4×1-square (10 ships, 20 squares).
 
 ## One-time setup
 
