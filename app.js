@@ -253,6 +253,49 @@
     }
   }
 
+  // Render a fleet status panel: one icon per ship, sunk ones shown in red,
+  // plus an "afloat / total" tally. `ships` are the ships being tracked and
+  // `shots` are the shots fired *at* those ships (2 = hit).
+  function renderFleetStatus(el, ships, shots, label) {
+    if (!el) return;
+    if (!ships || !ships.length) {
+      el.innerHTML = "";
+      return;
+    }
+    const sorted = [...ships].sort((a, b) => b.cells.length - a.cells.length);
+    let afloat = 0;
+    const pills = sorted
+      .map((ship) => {
+        const sunk = isSunk(ship, shots);
+        if (!sunk) afloat++;
+        const segs = ship.cells.map(() => '<span class="seg"></span>').join("");
+        const len = ship.cells.length;
+        return (
+          '<span class="fleet-ship' +
+          (sunk ? " sunk" : "") +
+          '" title="' +
+          len +
+          "-cell ship" +
+          (sunk ? " — sunk" : "") +
+          '">' +
+          segs +
+          "</span>"
+        );
+      })
+      .join("");
+    el.innerHTML =
+      '<div class="fleet-head"><span>' +
+      label +
+      '</span><span class="fleet-count">' +
+      afloat +
+      "/" +
+      ships.length +
+      " afloat</span></div>" +
+      '<div class="fleet-row">' +
+      pills +
+      "</div>";
+  }
+
   // myShots = how *I* see the enemy board (results of my shots)
   function drawEnemy() {
     const ctx = enemyCanvas.getContext("2d");
@@ -269,6 +312,7 @@
     if (enemy && enemy.ships)
       for (const ship of enemy.ships)
         if (isSunk(ship, shots)) drawSunkOutline(ctx, ship);
+    renderFleetStatus($("enemy-fleet"), enemy && enemy.ships, shots, "Enemy fleet");
   }
 
   // own board with enemy shots on it
@@ -292,6 +336,7 @@
     if (mine && mine.ships)
       for (const ship of mine.ships)
         if (isSunk(ship, incoming)) drawSunkOutline(ctx, ship);
+    renderFleetStatus($("own-fleet"), mine && mine.ships, incoming, "Your fleet");
   }
 
   // ===================================================================

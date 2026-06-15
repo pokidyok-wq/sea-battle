@@ -188,3 +188,54 @@ canvas {
 #gameover {
   text-align: center;
 }
+
+/* ---- fleet status panels ---- */
+.fleet-status {
+  margin-top: 10px;
+  min-height: 1px;
+}
+
+.fleet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.fleet-count {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.fleet-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.fleet-ship {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  transition: opacity 0.2s ease;
+}
+
+.fleet-ship .seg {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--ship);
+}
+
+.fleet-ship.sunk {
+  opacity: 0.65;
+}
+
+.fleet-ship.sunk .seg {
+  background: var(--hit);
+}
